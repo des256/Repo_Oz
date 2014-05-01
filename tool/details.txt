@@ -1,0 +1,58 @@
++ design and implement client API
+
+- design speech gestures
+
++ design speak markup codes:
+
+    a string to pass to TTS, containing XML-tags, like:
+
+        "<brow>hello!</brow> how <nodup>nice</nodup> of you to <yes>drop by</yes>."
+
+    tags expanded later
+
+* design memory classes:
+
+    Model, containing nodes and transitions:
+        map<int,Node> nodes; nodes[id] = node
+        map<int,map<int,Transition>> transitions; transitions[from_id][to_id] = transition
+
+    Node, holds the ID and some parameters:
+        string entry; text to speak when entering this node
+
+    Transition, holds the from and to node pointers, and some parameters:
+        string condition; utterance to trigger this transition (expanded later with touch clicks, face appearances, external triggers, etc.)
+        string transit; text to speak when taking this transition
+    'fromless' transitions are transitions without a from node (id = 0), these are always available
+
++ design execution classes
+
+    Model::Run(Node* init = 0), starts running the script, starting at node init. If init is null, the robot is completely nonmodal (so only fromless transitions work to start a conversation).
+
+    running is:
+
+        1. wait for user utterance (or other trigger) from the robot
+        2. lookup corresponding transition from the current node, if found, process transition, set current node to transition to-node, go to 1
+        3. lookup corresponding fromless transition, if found, process transition, set current node to transition to-node, go to 1
+        4. output a '<eyecontact/>sorry?' or '<eyecontact/>what?' or similar, go to 1
+
++ connect/disconnect functionality
+
++ load/save of Model, dirty flag, etc. (copy from Ultra360)
+
++ canvas widget with movable objects for nodes and transitions
+
+    use QGraphicsView widget and QGraphicsScene with addRect and addEllipse for the various nodes and transition endpoints
+
++ various context menus when clicking on the objects
+
+- create/delete new node
+
+- create/delete transition
+
+- run/break
+
+- light up the current node while running
+
+- add support to upload the script 'permanently' into the robot, so you don't need a remote connection
+
+- explore node groups
